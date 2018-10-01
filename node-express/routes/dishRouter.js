@@ -19,7 +19,7 @@ dishRouter.route('/')
     res.end('(Get) Will and send all the dishes to you!');
 })
 .post((req, res, next) => {
-    res.end('(Post) Will add the new dish: ' + req.body.name +
+    res.end('(Post) Will add a new dish: ' + req.body.name +
     ' with details: ' + req.body.description); // <- defining the parameter name
 })
 .put((req, res, next) => {
@@ -28,6 +28,26 @@ dishRouter.route('/')
 })
 .delete((req, res, next) => {
     res.end('(Delete) Will delete all the dishes!');
+});
+
+
+// // handle operations on /dishes/:dishId
+dishRouter.route('/:dishId/')
+.get((req, res, next) => {
+    res.end('(Get) Will and send details for dish ' + req.params.dishId + ' to you!');
+    // '/dishes/:dishId' <--- req.params.dishId. Parameter names need to match
+})
+.post((req, res, next) => {  // POST = new 
+    res.statusCode = 403;
+    res.end('(Post) operation not supported on /dishes/' + req.params.dishId); 
+})
+.put((req, res, next) => { // PUT = modify
+    res.write('Updating the dish: ' + req.params.dishId + '\n');
+    res.end('(Put) Will update dish ' + req.params.dishId + 
+        ', with details: ' + req.body.description + ', for you!');
+})
+.delete((req, res, next) => {
+    res.end('(Delete) Will delete dish ' + req.params.dishId + '!');
 });
 
 module.exports = dishRouter;
