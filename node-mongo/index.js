@@ -30,7 +30,6 @@ MongoClient.connect(url, (err, client) => {
 
                     dbOperations.findDocuments(db, "dishes", (docs) => {
                         console.log('Found documents:\n ', docs);
-
                         db.dropCollection("dishes", (result) => {
                             console.log('Dropped collection ', result);
 
