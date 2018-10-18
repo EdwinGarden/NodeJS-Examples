@@ -4,7 +4,7 @@ const Dishes = require('./models/dishes');
 
 //var MongoClient = require('mongodb').MongoClient;
 
-var uri = "";
+var uri = "mongodb+srv://EdwinGarden:zThFgB9J1EoJ4OPF@gardencluster01-mkvr1.mongodb.net/node-examples?retryWrites=true";
 
 const connect = mongoose.connect(uri);
 

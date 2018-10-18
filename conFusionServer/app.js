@@ -2,6 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -9,6 +10,21 @@ var usersRouter = require('./routes/users');
 var dishRouter = require('./routes/dishRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var promoRouter = require('./routes/promoRouter');
+
+const mongoose = require('mongoose');
+
+const Dishes = require('./models/dishes');
+
+var uri = "mongodb+srv://EdwinGarden:zThFgB9J1EoJ4OPF@gardencluster01-mkvr1.mongodb.net/node-examples?retryWrites=true";
+const connect = mongoose.connect(uri);
+
+connect.then((db) => {
+
+  console.log('Connected to the mongo server ');
+
+}, (err) => {
+  console.log(err);
+});
 
 var app = express();
 
