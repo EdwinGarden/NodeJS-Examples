@@ -230,8 +230,8 @@ dishRouter.route('/:dishId/comments/:commentId')
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if (dish != null && dish.comments.id(req.params.commentId) != null) {
-            console.log('(Delete) Deleting comment for dish ', req.params.dishId);
-            console.log('Deleting comment ' + dish.commentId);
+            console.log('(Delete) Deleting comment for dish ' + req.params.dishId);
+            console.log('Deleting comment ' + req.params.commentId);
             dish.comments.id(req.params.commentId).remove();
             dish.save()
             .then((dish) => {
