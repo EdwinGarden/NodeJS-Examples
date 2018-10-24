@@ -14,6 +14,8 @@ var promoRouter = require('./routes/promoRouter');
 const mongoose = require('mongoose');
 
 const Dishes = require('./models/dishes');
+const Promotions = require('./models/promotions');
+const Leaders = require('./models/leaders');
 
 var uri = "mongodb+srv://EdwinGarden:zThFgB9J1EoJ4OPF@gardencluster01-mkvr1.mongodb.net/node-examples?retryWrites=true";
 const connect = mongoose.connect(uri);
