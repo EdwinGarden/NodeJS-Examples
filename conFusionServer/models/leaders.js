@@ -3,10 +3,35 @@ const Schema = mongoose.Schema;
 
 
 const leaderSchema = new Schema({
-    "name": "Peter Pan",
-    "image":"images/alberto.png",
-    "designation": "Chief Epicurious Officer",
-    "abbr": "CEO",
-    "description": "Our CEO, Peter, ...",
-    "featured": false
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    image: {
+        type: String,
+        required: true
+    },
+    designation: {
+        type: String,
+        required: true
+    },
+    abbr: {
+        type: String,
+        required: false
+    },
+    featured: {
+        type: Boolean,
+        default: false
+    }
+},{
+    timestamps: true
 });
+
+var Leaders = mongoose.model('Leader', leaderSchema);
+
+module.exports = Leaders;
