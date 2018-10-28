@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
 
 
 var indexRouter = require('./routes/index');
@@ -39,7 +41,18 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('12345-67890-09876-54321'));
+
+// we're going to authenticate by session
+//app.use(cookieParser('12345-67890-09876-54321'));
+
+app.use(session({
+  name: 'session-id',
+  secret: '12345-67890-09876-54321',
+  saveUninitialized: false,
+  resave: false,
+  store: new fileStore()
+}))
+
 // require auth before accessing the following
 app.use(auth);
 
@@ -69,9 +82,9 @@ app.use(function(err, req, res, next) {
 
 // functions
 function auth (req, res, next) {
-  console.log(req.signedCookies);
+  console.log(req.session);
 
-  if (!req.signedCookies.user) {
+  if (!req.session.user) {
     // note american spelling... 
     var authHeader = req.headers.authorization;
 
@@ -87,9 +100,10 @@ function auth (req, res, next) {
     var username = auth[0];
     var password = auth[1];
 
-    if (username == 'admin' && password == 'password') {
+    if (username === 'admin' && password === 'password') {
       // all good, save cookie and allow pass through
-      res.cookie('user', 'admin', {signed:true});
+      //res.cookie('user', 'admin', {signed:true});
+      req.session.user = 'admin';
       next();
     }
     else {
@@ -102,7 +116,7 @@ function auth (req, res, next) {
   }
   else // cookie exists, check the user property
   {
-    if (req.signedCookies.user == 'admin') {
+    if (req.session.user === 'admin') {
       next();
     }
     else
