@@ -6,7 +6,8 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
-
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -53,6 +54,9 @@ app.use(session({
   store: new fileStore()
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 // index and users endpoint are open - don't need auth
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -84,25 +88,15 @@ app.use(function(err, req, res, next) {
 
 // functions
 function auth (req, res, next) {
-  console.log(req.session);
-
-  if (!req.session.user) {
-    // note american spelling... 
+  console.log(req.user);
+  
+  if (!req.user) {
     var err = new Error('You are not authenticated!');
-    err.status = 401;
+    err.status = 403;
     return next(err);
   }
-  else // cookie exists, check the user property
-  {
-    if (req.session.user === 'authenticated') {
-      next();
-    }
-    else
-    {
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
-      return next(err);
-    }
+  else {
+    next();
   }
 }
 
