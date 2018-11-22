@@ -8,6 +8,7 @@ var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,7 +22,8 @@ const Dishes = require('./models/dishes');
 const Promotions = require('./models/promotions');
 const Leaders = require('./models/leaders');
 
-var uri = "mongodb+srv://EdwinGarden:zThFgB9J1EoJ4OPF@gardencluster01-mkvr1.mongodb.net/node-examples?retryWrites=true";
+//var uri = "mongodb+srv://EdwinGarden:zThFgB9J1EoJ4OPF@gardencluster01-mkvr1.mongodb.net/node-examples?retryWrites=true";
+var uri = config.mongoUrl;
 const connect = mongoose.connect(uri);
 
 connect.then((db) => {
@@ -43,29 +45,30 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// we're going to authenticate by session
+// we're (not) going to authenticate by session
 //app.use(cookieParser('12345-67890-09876-54321'));
 
-app.use(session({
-  name: 'session-id',
-  secret: '12345-67890-09876-54321',
-  saveUninitialized: false,
-  resave: false,
-  store: new fileStore()
-}))
+// app.use(session({
+//   name: 'session-id',
+//   secret: '12345-67890-09876-54321',
+//   saveUninitialized: false,
+//   resave: false,
+//   store: new fileStore()
+// }))
 
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 // index and users endpoint are open - don't need auth
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // require auth before accessing the following
-app.use(auth);
+//app.use(auth); // <-- via authenticate.js now
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// allow all access for GET, check for authorisation for anything else
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
@@ -87,17 +90,17 @@ app.use(function(err, req, res, next) {
 });
 
 // functions
-function auth (req, res, next) {
-  console.log(req.user);
+// function auth (req, res, next) {
+//   console.log(req.user);
   
-  if (!req.user) {
-    var err = new Error('You are not authenticated!');
-    err.status = 403;
-    return next(err);
-  }
-  else {
-    next();
-  }
-}
+//   if (!req.user) {
+//     var err = new Error('You are not authenticated!');
+//     err.status = 403;
+//     return next(err);
+//   }
+//   else {
+//     next();
+//   }
+// }
 
 module.exports = app;

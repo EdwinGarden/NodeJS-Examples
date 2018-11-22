@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const Dishes = require('../models/dishes');
+const authenticate = require('../authenticate');
 
 const dishRouter = express.Router();
 
@@ -13,8 +14,8 @@ dishRouter.use(bodyParser.json());
 // can chain all of the operations to the route
 // I guess that you can do it all separately as well
 dishRouter.route('/')
-.get((req, res, next) => {
-    // return all of the dishes
+.get((req, res, next) => { // open for all
+    // return all of the dishes 
     Dishes.find({})
     .then((dishes) => {
         console.log('(Get) Find dishes ', dishes);
@@ -24,7 +25,7 @@ dishRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err)); // errors are passed on to the overall error handler
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => { // check auth
     Dishes.create(req.body)
     .then((dish) => {
         console.log('(Post) Dish created ', dish);
@@ -34,11 +35,11 @@ dishRouter.route('/')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('(Put) operation not supported on /dishes'); // <- defining the parameter name
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Dishes.remove({})
     .then((resp) => {
         console.log('(Delete) Deleting all the dishes');
@@ -52,7 +53,7 @@ dishRouter.route('/')
 
 // // handle operations on /dishes/:dishId
 dishRouter.route('/:dishId/')
-.get((req, res, next) => {
+.get((req, res, next) => { // open for all
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         console.log('(Get) Will and send details for dish ' + req.params.dishId + ' to you!');
@@ -62,11 +63,11 @@ dishRouter.route('/:dishId/')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.post((req, res, next) => {  // POST = new 
+.post(authenticate.verifyUser, (req, res, next) => {  // POST = new
     res.statusCode = 403;
     res.end('(Post) operation not supported on /dishes/' + req.params.dishId); 
 })
-.put((req, res, next) => { // PUT = modify
+.put(authenticate.verifyUser, (req, res, next) => { // PUT = modify
     Dishes.findByIdAndUpdate(req.params.dishId, {
         $set: req.body
     }, {new : true})
@@ -78,7 +79,7 @@ dishRouter.route('/:dishId/')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
     .then((resp) => {
         console.log('(Delete) Will delete dish ' + req.params.dishId + '!');
@@ -111,7 +112,7 @@ dishRouter.route('/:dishId/comments')
     }, (err) => next(err))
     .catch((err) => next(err)); // errors are passed on to the overall error handler
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
 
@@ -133,11 +134,11 @@ dishRouter.route('/:dishId/comments')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('(Put) operation not supported on /dishes/' + req.params.dishId + '/comments'); // <- defining the parameter name
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if (dish != null) {
@@ -189,11 +190,11 @@ dishRouter.route('/:dishId/comments/:commentId')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.post((req, res, next) => {  // POST = new 
+.post(authenticate.verifyUser, (req, res, next) => {  // POST = new 
     res.statusCode = 403;
     res.end('(Post) operation not supported on /dishes/' + req.params.dishId + '/comments/' + req.params.commentId); 
 })
-.put((req, res, next) => { // PUT = modify
+.put(authenticate.verifyUser, (req, res, next) => { // PUT = modify
     Dishes.findById(req.params.dishId)
     .then((dish) => {
        
@@ -226,7 +227,7 @@ dishRouter.route('/:dishId/comments/:commentId')
     }, (err) => next(err))    
     .catch((err) => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if (dish != null && dish.comments.id(req.params.commentId) != null) {
