@@ -36,3 +36,4 @@ exports.JwtStrategy = passport.use(new JwtStrategy(options, (jwt_payload, done) 
 }));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false}); // can call this whenever, so for periodic checks and to check auth on certain endpoints
+exports.verifyAdmin = passport.authenticate('jwt', {session: false});
