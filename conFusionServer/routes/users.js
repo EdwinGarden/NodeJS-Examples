@@ -8,6 +8,24 @@ var authenticate = require('../authenticate')
 var router = express.Router();
 router.use(bodyParser.json());
 
+router.route('/')
+.get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  if (req.user.admin) {
+    User.find({})
+    .then((users) => {
+      console.log('(Get) Return all users ', users);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(users);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+  }
+  else {
+    res.statusCode = 403;
+    res.end('(Get) You are not authorized to perform this operation!'); 
+  }
+});
+
 // allow users to sign up
 router.post('/signup', (req, res, next) => {
   User.register(new User({username: req.body.username}), 
