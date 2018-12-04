@@ -79,46 +79,28 @@ promoRouter.route('/:promotionId/')
     .catch((err) => next(err));
 })
 .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    if (req.user.admin) {
-        res.statusCode = 403;
-        res.end('(Post) operation not supported on /promotions/' + req.params.promotionId);
-    }
-    else {
-        res.statusCode = 403;
-        res.end('(Post) You are not authorized to perform this operation!'); 
-    }
+    res.statusCode = 403;
+    res.end('(Post) operation not supported on /promotions/' + req.params.promotionId);
 })
 .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    if (req.user.admin) {
-        Promotions.findByIdAndUpdate(req.params.promotionId, {
-            $set: req.body
-        }, {new : true})
-        .then((promotion) => {
-            console.log('(Put) Updating promotion ' + req.params.promotionId + ', for you!');
-            res = setResponse(res, 200);
-            res.json(promotion);
-        }, (err) => next(err))
-        .catch((err) => next(err));
-    }
-    else {
-        res.statusCode = 403;
-        res.end('(Put) You are not authorized to perform this operation!'); 
-    }
+    Promotions.findByIdAndUpdate(req.params.promotionId, {
+        $set: req.body
+    }, {new : true})
+    .then((promotion) => {
+        console.log('(Put) Updating promotion ' + req.params.promotionId + ', for you!');
+        res = setResponse(res, 200);
+        res.json(promotion);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 })
 .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    if (req.user.admin) {
-        Promotions.findByIdAndDelete(req.params.promotionId)
-        .then((resp) => {
-            console.log('(Delete) Will delete promotion ' + req.params.promotionId + '!');
-            res = setResponse(res, 200);
-            res.json(resp);
-        }, (err) => next(err))
-        .catch((err) => next(err));
-    }
-    else {
-        res.statusCode = 403;
-        res.end('(Delete) You are not authorized to perform this operation!'); 
-    }
+    Promotions.findByIdAndDelete(req.params.promotionId)
+    .then((resp) => {
+        console.log('(Delete) Will delete promotion ' + req.params.promotionId + '!');
+        res = setResponse(res, 200);
+        res.json(resp);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 module.exports = promoRouter;
