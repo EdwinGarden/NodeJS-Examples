@@ -4,12 +4,13 @@ const bodyParser = require('body-parser');
 var User = require('../models/user');
 var passport = require('passport');
 var authenticate = require('../authenticate')
+const cors = require('./cors');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 router.route('/')
-.get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   if (req.user.admin) {
     User.find({})
     .then((users) => {
@@ -27,7 +28,7 @@ router.route('/')
 });
 
 // allow users to sign up
-router.post('/signup', (req, res, next) => {
+router.post('/signup', cors.corsWithOptions, (req, res, next) => {
   User.register(new User({username: req.body.username}), 
   req.body.password, (err, user) => {
     if (err) {
@@ -59,7 +60,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 // allow user to log in after sign up
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
 
   var token = authenticate.getToken({_id: req.user._id});
 
@@ -69,7 +70,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 });
 
 // handle user log-out
-router.get('/logout', (req, res) => {
+router.get('/logout', cors.corsWithOptions, (req, res) => {
   if (req.session) // does the session exist?
   {
     req.session.destroy();
